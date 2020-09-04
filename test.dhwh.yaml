@@ -1,6 +1,18 @@
 http:
   ip_address: 127.0.0.1
   port: 8080
+  # For Timeouts, use the following format:
+  # <int><duration>
+  #
+  # For duration, use the following suffixes:
+  #   msec : Milliseconds
+  #   sec  : Seconds
+  #   min  : Minutes
+  #   hr   : Hours
+  #   day  : Days
+  #   wk   : Weeks
+  #   mo   : Months
+  #   yr   : Years
   read_header_timeout: 10sec
   read_timeout: 15sec
   write_timeout: 15sec
