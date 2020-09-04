@@ -16,12 +16,49 @@ type ServerOption func(*Server)
 func WithDefaults() ServerOption {
 	return func(S *Server) {
 		S.HTTP = &http.Server{
-			Addr:         "0.0.0.0:8000",
-			Handler:      S.NewRouter(),
-			ReadTimeout:  time.Duration(15) * time.Second,
-			WriteTimeout: time.Duration(15) * time.Second,
-			IdleTimeout:  time.Duration(15) * time.Second,
+			Addr:              "0.0.0.0:8000",
+			Handler:           S.NewRouter(),
+			ReadHeaderTimeout: time.Duration(10) * time.Second,
+			ReadTimeout:       time.Duration(15) * time.Second,
+			WriteTimeout:      time.Duration(15) * time.Second,
+			IdleTimeout:       time.Duration(15) * time.Second,
 		}
+	}
+}
+
+func WithHTTPServerAddress(ip string, port int) ServerOption {
+	return func(S *Server) {
+		S.HTTP.Addr = fmt.Sprintf("%s:%d", ip, port)
+	}
+}
+
+func WithHTTPServerHandler(handler http.Handler) ServerOption {
+	return func(S *Server) {
+		S.HTTP.Handler = handler
+	}
+}
+
+func WithHTTPServerReadHeaderTimeout(t time.Duration) ServerOption {
+	return func(S *Server) {
+		S.HTTP.ReadHeaderTimeout = t
+	}
+}
+
+func WithHTTPServerReadTimeout(t time.Duration) ServerOption {
+	return func(S *Server) {
+		S.HTTP.ReadTimeout = t
+	}
+}
+
+func WithHTTPServerWriteTimeout(t time.Duration) ServerOption {
+	return func(S *Server) {
+		S.HTTP.WriteTimeout = t
+	}
+}
+
+func WithHTTPServerIdleTimeout(t time.Duration) ServerOption {
+	return func(S *Server) {
+		S.HTTP.IdleTimeout = t
 	}
 }
 
@@ -38,7 +75,7 @@ func (S *Server) Run() {
 
 	signal.Notify(runChan, os.Interrupt)
 
-	fmt.Printf("Running server on %s\n", S.HTTP.Addr)
+	log.Printf("Running server on %s\n", S.HTTP.Addr)
 	go func() {
 		if err := S.HTTP.ListenAndServe(); err != nil {
 			log.Fatal(err)
@@ -47,7 +84,7 @@ func (S *Server) Run() {
 
 	sig := <-runChan
 
-	fmt.Printf("Shutting server down due to %s", sig.String())
+	log.Printf("\rShutting server down due to %s\n", sig.String())
 	if err := S.HTTP.Shutdown(ctx); err != nil {
 		log.Fatal(err)
 	}
@@ -55,6 +92,16 @@ func (S *Server) Run() {
 
 func NewWithOptions(opts ...ServerOption) *Server {
 	S := new(Server)
+
+	// Establish the defaults
+	S.HTTP = &http.Server{
+		Addr:              "0.0.0.0:8000",
+		Handler:           S.NewRouter(),
+		ReadHeaderTimeout: time.Duration(10) * time.Second,
+		ReadTimeout:       time.Duration(15) * time.Second,
+		WriteTimeout:      time.Duration(15) * time.Second,
+		IdleTimeout:       time.Duration(15) * time.Second,
+	}
 
 	for _, opt := range opts {
 		opt(S)

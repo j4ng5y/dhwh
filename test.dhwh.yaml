@@ -1,0 +1,7 @@
+http:
+  ip_address: 127.0.0.1
+  port: 8080
+  read_header_timeout: 10sec
+  read_timeout: 15sec
+  write_timeout: 15sec
+  idle_timeout: 1min

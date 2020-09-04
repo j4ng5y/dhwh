@@ -131,7 +131,7 @@ func (S *Server) NewWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := dkr.PullNewContainer(context.Background(), "my_container"); err != nil {
+	if err := dkr.PullNewContainerImage(context.Background(), "my_container"); err != nil {
 		log.Println(err)
 		http.Error(w, "unable to pull new container iamge", http.StatusInternalServerError)
 		resp = &Response{

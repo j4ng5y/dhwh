@@ -8,6 +8,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// NewRouter is a function that will generate a new mux.Router instance
+// with appropriate routes injected.
+//
+// Arguments:
+//     None
+//
+// Returns:
+//     (*mux.Router): A pointer to the new instance of mux.Router
 func (S *Server) NewRouter() *mux.Router {
 	R := mux.NewRouter()
 
